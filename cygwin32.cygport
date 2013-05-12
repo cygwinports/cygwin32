@@ -1,0 +1,55 @@
+TOOLCHAIN_TARGET="i686-pc-cygwin"
+CVS_URI="${SOURCEWARE_LOGIN-:pserver:anoncvs@cygwin.com}:/cvs/src"
+CVS_MODULE="cygwin"
+CVS_BRANCH="cygwin-${PV//\./_}-release"
+SRC_DIR="src"
+inherit toolchain cvs
+
+NAME="cygwin32"
+VERSION=1.7.18
+RELEASE=1
+CATEGORY="Devel"
+SUMMARY="Cygwin 32bit toolchain"
+DESCRIPTION="Cygwin is a Linux-like environment for Windows. It consists of a
+DLL (cygwin1.dll), which acts as an emulation layer providing substantial POSIX
+system call functionality, and a collection of tools, which provide a Linux
+look and feel."
+HOMEPAGE="http://cygwin.com/"
+
+PATCH_URI="
+	01-program-prefix.patch
+	02-gcc47.patch
+"
+
+cygwin32_CONTENTS="--exclude=cygwin1.dbg usr/"
+PKG_IGNORE="${TOOLCHAIN_SYSROOT#/}/usr/bin/cygwin1.dbg"
+
+src_compile() {
+	cd ${B}
+	${S}/configure \
+		--target=${TOOLCHAIN_TARGET} \
+		--prefix=${TOOLCHAIN_SYSROOT}/usr \
+		--sysconfdir=${TOOLCHAIN_SYSROOT}/etc \
+		--program-transform-name=s,y,y, \
+		|| error
+	touch ${S}/winsup/cygwin/tlsoffsets*.h
+	cygmake
+}
+
+src_install() {
+	cd ${B}
+	cyginstall -j1 tooldir=${TOOLCHAIN_SYSROOT}/usr
+
+	insinto /usr/lib/debug/${TOOLCHAIN_SYSROOT}/usr/bin
+	doins ${TOOLCHAIN_TARGET}/winsup/cygwin/cygwin1.dbg
+	dosym ../../../../lib/debug/${TOOLCHAIN_SYSROOT}/usr/bin/cygwin1.dbg ${TOOLCHAIN_SYSROOT}/usr/bin/cygwin1.dbg
+
+	cd ${D}${TOOLCHAIN_SYSROOT}
+	rm -fr usr/share/info/ usr/share/man/
+	# provided by libiconv
+	rm -f usr/include/iconv.h
+	# provided by libncurses
+	rm -f usr/include/unctrl.h
+}
+
+DOCS="winsup/COPYING winsup/CYGWIN_LICENSE COPYING.NEWLIB README"
