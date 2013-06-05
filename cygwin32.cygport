@@ -6,7 +6,7 @@ SRC_DIR="src"
 inherit toolchain cvs
 
 NAME="cygwin32"
-VERSION=1.7.18
+VERSION=1.7.19
 RELEASE=1
 CATEGORY="Devel"
 SUMMARY="Cygwin 32bit toolchain"
@@ -18,7 +18,6 @@ HOMEPAGE="http://cygwin.com/"
 
 PATCH_URI="
 	01-program-prefix.patch
-	02-gcc47.patch
 "
 
 cygwin32_CONTENTS="--exclude=cygwin1.dbg usr/"
@@ -45,7 +44,8 @@ src_install() {
 	dosym ../../../../lib/debug/${TOOLCHAIN_SYSROOT}/usr/bin/cygwin1.dbg ${TOOLCHAIN_SYSROOT}/usr/bin/cygwin1.dbg
 
 	cd ${D}${TOOLCHAIN_SYSROOT}
-	rm -fr usr/share/info/ usr/share/man/
+	rm -fr etc/ usr/bin/*.exe usr/bin/cyglsa* usr/bin/*-config usr/sbin/*.exe
+	rm -fr usr/share/doc/ usr/share/info/ usr/share/man/
 	# provided by libiconv
 	rm -f usr/include/iconv.h
 	# provided by libncurses
