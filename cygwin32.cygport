@@ -6,8 +6,8 @@ SRC_DIR="src"
 inherit toolchain cvs
 
 NAME="cygwin32"
-VERSION=1.7.27
-RELEASE=2
+VERSION=1.7.30
+RELEASE=1
 CATEGORY="Devel"
 SUMMARY="Cygwin 32bit toolchain"
 DESCRIPTION="Cygwin is a Linux-like environment for Windows. It consists of a
